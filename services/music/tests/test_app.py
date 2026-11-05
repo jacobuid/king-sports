@@ -83,7 +83,7 @@ class MusicTests(unittest.TestCase):
         response = self.client.post("/search", json={"query": "--exec evil"}, headers=self.headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["results"], [{"videoId": "abcdefghijk", "title": "Song", "artist": "Artist", "album": "Album", "isExplicit": True, "duration": 120, "thumbnail": "https://lh3.googleusercontent.com/artwork"}])
-        self.assertEqual(client.return_value.search.call_args_list, [call("--exec evil", filter="songs", limit=8), call("--exec evil", filter="videos", limit=8)])
+        self.assertEqual(client.return_value.search.call_args_list, [call("--exec evil", filter="songs", limit=12), call("--exec evil", filter="videos", limit=12)])
         self.assertNotIn("auth", client.call_args.kwargs)
 
     @patch.object(service, "YTMusic")
@@ -93,7 +93,29 @@ class MusicTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["results"][0]["thumbnail"], "https://i.ytimg.com/vi/abcdefghijk/mqdefault.jpg")
         self.assertIsNone(response.json()["results"][0]["isExplicit"])
-        self.assertEqual(client.return_value.search.call_args_list, [call("song", filter="songs", limit=8), call("song", filter="videos", limit=8)])
+        self.assertEqual(client.return_value.search.call_args_list, [call("song", filter="songs", limit=12), call("song", filter="videos", limit=12)])
+
+    def test_search_ranking_favors_exact_official_match_and_penalizes_unrequested_variants(self):
+        songs = [
+            {"videoId": "aaaaaaaaaaa", "title": "Thunder Cover", "duration_seconds": 180, "artists": [{"name": "Other"}]},
+            {"videoId": "bbbbbbbbbbb", "title": "Thunder", "duration_seconds": 180, "artists": [{"name": "Imagine Dragons"}], "videoType": "MUSIC_VIDEO_TYPE_ATV"},
+        ]
+        videos = [
+            {"videoId": "ccccccccccc", "title": "Thunder Live", "duration_seconds": 190, "artists": [{"name": "Imagine Dragons"}]},
+            {"videoId": "ddddddddddd", "title": "Thunder", "duration_seconds": 185, "artists": [{"name": "Imagine Dragons"}], "videoType": "MUSIC_VIDEO_TYPE_OMV"},
+        ]
+        results = service.ranked_music_results("Imagine Dragons Thunder", songs, videos)
+        self.assertEqual([result["videoId"] for result in results[:2]], ["bbbbbbbbbbb", "ddddddddddd"])
+        self.assertEqual(results[-1]["videoId"], "aaaaaaaaaaa")
+
+    def test_search_ranking_keeps_both_song_and_video_results(self):
+        songs = [{"videoId": f"songid{i:05d}"[:11], "title": f"Song {i}", "duration_seconds": 120, "artists": [{"name": "Artist"}]} for i in range(12)]
+        videos = [{"videoId": f"videoid{i:04d}"[:11], "title": f"Song video {i}", "duration_seconds": 120, "artists": [{"name": "Artist"}]} for i in range(12)]
+        results = service.ranked_music_results("Artist Song", songs, videos)
+        ids = {result["videoId"] for result in results}
+        self.assertEqual(len(results), 12)
+        self.assertTrue(any(video["videoId"] in ids for video in videos))
+        self.assertTrue(any(song["videoId"] in ids for song in songs))
 
     @patch.object(service, "YTMusic")
     def test_upstream_music_search_failure_is_reported(self, client):

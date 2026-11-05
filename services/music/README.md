@@ -9,11 +9,14 @@ the response. Closing the drawer does not cancel the import.
 AAC audio is copied into an M4A container with fast-start metadata. Other source
 codecs are converted to AAC for iPhone/Android/browser compatibility. No MP3 is
 required. Limits: 20-minute source, 50 MB audio, 100 imports/day, 500 library
-entries/account. Search debounces 1.6 seconds and returns eight results; it uses
+entries/account. Search debounces 1.6 seconds and returns up to 12 results; it uses
 anonymous ytmusicapi catalog search rather than the YouTube Data API, so no
-YouTube API key or account session is required for search. Songs is the default
-category; users can switch to Videos. Results include artist, album, artwork,
-duration, and an explicit-content indicator when that metadata is available.
+YouTube API key or account session is required for search. KingSports combines
+song and video matches, ranks exact title/artist matches first, favors official
+sources, keeps both result types represented, and lowers unrequested covers,
+karaoke, reactions, remixes, live performances, and altered-speed versions.
+Results include artist, album, artwork, duration, and an explicit-content
+indicator when that metadata is available.
 yt-dlp still performs downloads; ytmusicapi does not resolve download sign-in checks.
 Source availability from Google's network must be tested after deployment.
 

@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import tempfile
+import unicodedata
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -110,6 +111,70 @@ def music_result(entry):
     return {"videoId": video_id, "title": str(entry.get("title") or "Untitled")[:200], "artist": artist[:100], "album": str(album.get("name") or "")[:150] if isinstance(album, dict) else "", "duration": duration, "thumbnail": thumbnail, "isExplicit": entry.get("isExplicit") if isinstance(entry.get("isExplicit"), bool) else None}
 
 
+def search_text(value):
+    value = unicodedata.normalize("NFKD", str(value or "")).encode("ascii", "ignore").decode().lower()
+    return " ".join(re.findall(r"[a-z0-9]+", value))
+
+
+UNWANTED_VARIANTS = ("cover", "karaoke", "reaction", "remix", "live", "sped up", "slowed", "nightcore", "8d", "instrumental")
+OFFICIAL_VIDEO_TYPES = {"MUSIC_VIDEO_TYPE_ATV", "MUSIC_VIDEO_TYPE_OMV"}
+
+
+def search_score(query, entry, source, position):
+    wanted = search_text(query)
+    title = search_text(entry.get("title"))
+    artists = " ".join(search_text(artist.get("name")) for artist in entry.get("artists", []) if isinstance(artist, dict))
+    searchable = f"{title} {artists}".strip()
+    tokens = wanted.split()
+    score = 0
+    if title == wanted:
+        score += 120
+    if searchable == wanted or f"{artists} {title}".strip() == wanted:
+        score += 90
+    if wanted and wanted in title:
+        score += 45
+    if tokens and all(token in searchable.split() for token in tokens):
+        score += 55
+    score += sum(9 for token in tokens if token in searchable.split())
+    if source == "song":
+        score += 14
+    if entry.get("videoType") in OFFICIAL_VIDEO_TYPES:
+        score += 18
+    for variant in UNWANTED_VARIANTS:
+        if variant in searchable and variant not in wanted:
+            score -= 32
+    return score - position * 1.5
+
+
+def ranked_music_results(query, song_entries, video_entries, limit=12):
+    candidates = {}
+    for source, entries in (("song", song_entries), ("video", video_entries)):
+        for position, entry in enumerate(entries):
+            result = music_result(entry)
+            if not result:
+                continue
+            candidate = (search_score(query, entry, source, position), source, result)
+            previous = candidates.get(result["videoId"])
+            if previous is None or candidate[0] > previous[0]:
+                candidates[result["videoId"]] = candidate
+    ranked = sorted(candidates.values(), key=lambda candidate: candidate[0], reverse=True)
+    selected = []
+    deferred = []
+    source_counts = {"song": 0, "video": 0}
+    source_cap = 7
+    for candidate in ranked:
+        _, source, result = candidate
+        if source_counts[source] >= source_cap:
+            deferred.append(result)
+            continue
+        selected.append(result)
+        source_counts[source] += 1
+        if len(selected) == limit:
+            break
+    selected.extend(deferred[:max(0, limit - len(selected))])
+    return selected
+
+
 class Job(BaseModel):
     id: str
     videoId: str
@@ -130,20 +195,9 @@ def search(body: Search):
         # Each request has an anonymous client/session; no account cookies are used.
         with MusicSession() as session:
             client = YTMusic(requests_session=session)
-            entries = [
-                *client.search(body.query.strip(), filter="songs", limit=8),
-                *client.search(body.query.strip(), filter="videos", limit=8),
-            ]
-        results = []
-        seen = set()
-        for entry in entries:
-            result = music_result(entry)
-            if result and result["videoId"] not in seen:
-                results.append(result)
-                seen.add(result["videoId"])
-            if len(results) == 12:
-                break
-        return {"results": results}
+            songs = client.search(body.query.strip(), filter="songs", limit=12)
+            videos = client.search(body.query.strip(), filter="videos", limit=12)
+        return {"results": ranked_music_results(body.query, songs, videos)}
     except (YTMusicError, requests.RequestException, ValueError, KeyError, IndexError):
         raise HTTPException(502, "Search unavailable")
 
