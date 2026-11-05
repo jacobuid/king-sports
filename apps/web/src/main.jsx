@@ -78,6 +78,7 @@ function App() {
   return <div className={`app ${route.page === 'view' || route.page === 'teams' ? 'team-view-app' : ''}`}>
     <Header account={<UserButton />} />
     {content}
+    <footer className="site-footer">&copy; {new Date().getFullYear()} King Family Ranch, LLC</footer>
     <nav className="bottom-nav" aria-label="Main menu" onClick={event => {
       const link = event.target.closest('a[href]')
       if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
