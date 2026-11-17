@@ -24,7 +24,7 @@ async function authorize(request: Request, env: Env) {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get('Origin')
-    const cors = { 'Access-Control-Allow-Origin': origin === env.WEB_ORIGIN ? origin : env.WEB_ORIGIN, 'Access-Control-Allow-Headers': 'Authorization, Content-Type, Range', 'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, OPTIONS', 'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges', 'Vary': 'Origin' }
+    const cors = { 'Access-Control-Allow-Origin': origin === env.WEB_ORIGIN ? origin : env.WEB_ORIGIN, 'Access-Control-Allow-Headers': 'Authorization, Content-Type, Range', 'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, DELETE, OPTIONS', 'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges', 'Vary': 'Origin' }
     if (request.method === 'OPTIONS') return new Response(null, { headers: cors })
     try {
       const incomingPath = new URL(request.url).pathname
