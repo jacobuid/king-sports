@@ -27,3 +27,14 @@ test('revoked KingAuth sessions are rejected and service outages fail closed', a
   const unavailable = createKingAuthVerifier({ origin, fetch: async () => new Response(null, { status: 503 }) })
   await assert.rejects(unavailable.getSession(request('test')), /unavailable/)
 })
+
+test('Worker verifier uses manual redirects and rejects redirected credentials', async () => {
+  const { createWorkerAuth } = await import('../services/api/src/auth.ts')
+  const auth = createWorkerAuth(origin, async (_url, options) => {
+    assert.equal(options.redirect, 'manual')
+    return Response.json({ user: { id: 'verified' } })
+  })
+  assert.equal((await auth.getSession(request('test'))).user.id, 'verified')
+  const redirected = createWorkerAuth(origin, async () => new Response(null, { status: 302, headers: { Location: 'https://elsewhere.example' } }))
+  await assert.rejects(redirected.getSession(request('test')), /redirected/)
+})

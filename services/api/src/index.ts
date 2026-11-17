@@ -1,4 +1,4 @@
-import { createKingAuthVerifier } from '@jacobuid/king-auth/server'
+import { createWorkerAuth } from './auth'
 import { AwsClient } from 'aws4fetch'
 import { handleTeamListRequest, handleTeamRequest } from './teams'
 import { createLogoStorage } from './logo-storage'
@@ -17,7 +17,7 @@ async function b2Url(env: Env, key: string) {
   return (await signer(env).sign(url, { aws: { signQuery: true } })).url
 }
 async function authorize(request: Request, env: Env) {
-  const auth = createKingAuthVerifier({ origin: env.WEB_ORIGIN, allowLocalhost: true })
+  const auth = createWorkerAuth(env.WEB_ORIGIN)
   const session = await auth.getSession(request)
   return session?.user.id || null
 }
