@@ -89,19 +89,34 @@ function App() {
 }
 function Welcome() {
   const [form, setForm] = useState('signin')
+  const activeTab = form === 'signup' ? 'signup' : 'signin'
+  const heading = form === 'signup' ? 'Join the clubhouse.' : form === 'reset' ? 'Forgot your password?' : 'Welcome back.'
+  function changeTab(event) {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+    event.preventDefault()
+    const next = event.key === 'Home' ? 'signin' : event.key === 'End' ? 'signup' : activeTab === 'signin' ? 'signup' : 'signin'
+    setForm(next)
+    document.getElementById('auth-tab-' + next)?.focus()
+  }
   return <div className="app welcome">
     <img className="welcome-background" src={`${import.meta.env.BASE_URL}hero-background.png`} alt="" fetchPriority="high" />
     <header className="welcome-brand"><img src={`${import.meta.env.BASE_URL}logo.png`} alt="KingSports" width="160" height="146" /></header>
     <main className="welcome-panel">
-      <p className="welcome-eyebrow">YOUR LINEUP STARTS HERE</p>
-      <h1>Your team<br />starts here.</h1>
-      <p className="welcome-copy">Sign in to create your roster and give every player their own walk-up music.</p>
-      {form === 'signin' ? <SignIn /> : form === 'signup' ? <SignUp /> : <ForgotPassword />}
-      <nav className="auth-links" aria-label="Account access">
-        {form !== 'signin' && <button type="button" onClick={() => setForm('signin')}>Sign in</button>}
-        {form !== 'signup' && <button type="button" onClick={() => setForm('signup')}>Create account</button>}
-        {form !== 'reset' && <button type="button" onClick={() => setForm('reset')}>Forgot password?</button>}
-      </nav>
+      <section className="auth-card" aria-labelledby="auth-heading">
+        <div className="auth-tabs" role="tablist" aria-label="Account access" onKeyDown={changeTab}>
+          <button id="auth-tab-signin" type="button" role="tab" aria-selected={activeTab === 'signin'} aria-controls="auth-panel" tabIndex={activeTab === 'signin' ? 0 : -1} onClick={() => setForm('signin')}>Sign in</button>
+          <button id="auth-tab-signup" type="button" role="tab" aria-selected={activeTab === 'signup'} aria-controls="auth-panel" tabIndex={activeTab === 'signup' ? 0 : -1} onClick={() => setForm('signup')}>Create account</button>
+        </div>
+        <div id="auth-panel" role="tabpanel" aria-labelledby={'auth-tab-' + activeTab}>
+          <h1 id="auth-heading">{heading}</h1>
+          <p className="auth-description">{form === 'signup' ? 'Create your KingSports account and get your team ready.' : form === 'reset' ? 'We’ll help you get back to your team.' : 'Sign in to KingSports. Your team is waiting.'}</p>
+          <div key={form} className="auth-form-content">
+            {form === 'signin' ? <SignIn /> : form === 'signup' ? <SignUp /> : <ForgotPassword />}
+          </div>
+          {form !== 'signup' && <button type="button" className="auth-text-link" onClick={() => setForm(form === 'reset' ? 'signin' : 'reset')}>{form === 'reset' ? 'Back to sign in' : 'Forgot your password?'}</button>}
+        </div>
+        <footer className="auth-footer">Secure sign-in by KingAuth</footer>
+      </section>
     </main>
   </div>
 }
