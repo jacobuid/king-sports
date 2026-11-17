@@ -34,3 +34,12 @@ body { padding: 0; }
   .view-roster { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .teams-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+/* Tablets keep the logo, introduction and auth card centered in one column. */
+@media (min-width: 600px) and (max-width: 1099px), (min-width: 600px) and (hover: none) and (pointer: coarse) {
+  .welcome-brand { align-self: center; }
+  .welcome-panel { display: flex; flex-direction: column; gap: 32px; max-width: 520px; margin-top: 40px; }
+  .welcome-intro { width: 100%; text-align: left; }
+  .welcome-panel .welcome-intro h1 { font-size: clamp(40px, 5vw, 50px); }
+  .welcome-panel .welcome-copy { margin-inline: 0; }
+  .auth-card { width: 100%; }
+}
