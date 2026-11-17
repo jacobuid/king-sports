@@ -55,12 +55,7 @@
 .game-tracker-heading h2 { margin: 0; font-size: 18px; }
 @media (min-width: 768px) { .game-home .game-list, .game-recent-heading, .game-home .game-new { max-width: 960px; margin-inline: auto; } .game-list-card { grid-template-columns: 64px minmax(0, 1fr) 130px; padding: 20px; gap: 20px; } .game-list-icon { width: 64px; height: 64px; } .game-list-info > strong { font-size: 20px; } }
 @media (max-width: 360px) { .game-list-card { grid-template-columns: 38px minmax(0, 1fr) auto; gap: 8px; padding: 12px 8px; } .game-list-icon { width: 38px; height: 44px; } .game-list-info > strong { font-size: 14px; } .game-list-totals { padding-left: 8px; } }
-.game-swipe-row { position: relative; min-width: 0; overflow: hidden; border-radius: 18px; background: #bd273b; touch-action: pan-y pinch-zoom; }
-.game-swipe-row .game-list-card { position: relative; z-index: 1; transform: translate3d(var(--game-drag-x, 0px), 0, 0); transition: transform 260ms cubic-bezier(.2, 1.3, .4, 1); }
-.game-swipe-row.game-dragging .game-list-card { transition: none; will-change: transform; }
-.game-delete-button { position: absolute; inset: 0 auto 0 0; width: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: 0; background: #bd273b; color: #fff; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; }
 .game-confirm-delete { width: 100%; min-height: 48px; border: 0; border-radius: 10px; background: #bd273b; color: #fff; font: inherit; font-weight: 700; }
-@media (prefers-reduced-motion: reduce) { .game-swipe-row .game-list-card { transition: none; } }
 
 .sheet.game-confirm { background: #fff; color: #132641; }
 .create-game-drawer { width: min(760px, 100%); max-width: 100%; max-height: 92dvh; margin: auto auto 0; inset: auto 0 0; padding: 0; border: 1px solid #d7e2ed; border-bottom: 0; border-radius: 28px 28px 0 0; background: #fff; color: #132641; box-sizing: border-box; overflow: hidden; }
