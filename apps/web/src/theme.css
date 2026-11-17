@@ -157,3 +157,6 @@
 .auth-card .auth-text-link { display: block; margin: 24px auto 0; padding: 4px; border: 0; background: transparent; color: #1d67bc; font: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .auth-footer { margin-top: 30px; padding-top: 22px; border-top: 1px solid #e7edf3; color: #73849a; text-align: center; font-size: 12px; }
 @media (min-width: 600px) { .welcome-panel { max-width: 520px; } .auth-card { padding: 38px; } }
+
+/* The shared footer and surrounding shell stay dark on every app screen. */
+.app:not(.welcome) { background: #03101e; }

@@ -43,3 +43,8 @@ body { padding: 0; }
   .welcome-panel .welcome-copy { margin-inline: 0; }
   .auth-card { width: 100%; }
 }
+
+/* Paint past the viewport edge to avoid a fractional-pixel seam below the menu. */
+@media (max-width: 767px) {
+  .bottom-nav { bottom: -1px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1px); }
+}
