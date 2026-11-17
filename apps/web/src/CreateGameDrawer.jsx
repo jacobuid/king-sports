@@ -62,7 +62,7 @@ export function CreateGameDrawer({ onClose, onStart }) {
     const awayName = away.trim(), homeName = home.trim()
     if (!awayName || !homeName) { setError('Enter both team names.'); return }
     if (awayName.toLowerCase() === homeName.toLowerCase()) { setError('Choose two different teams.'); return }
-    if (!ourSide) { setError('Choose whether we are the away or home team.'); return }
+    if (!ourSide) { setError('Choose whether we are the home or visitor team.'); return }
     const find = name => teams.find(team => team.name.toLowerCase() === name.toLowerCase())?.id || null
     const awayTeamId = find(awayName), homeTeamId = find(homeName)
     onStart({ awayName, homeName, awayTeamId, homeTeamId, sport, ourSide })
@@ -75,12 +75,12 @@ export function CreateGameDrawer({ onClose, onStart }) {
       <section className="create-game-teams" aria-labelledby={title + '-teams'}><h3 id={title + '-teams'}>Teams</h3>
         {loading && <p role="status">Loading saved teams...</p>}
         {loadError && <p role="status">{loadError}</p>}
-        <TeamInput label="Away Team" value={away} onChange={setAway} teams={teams} />
+        <TeamInput label="Visitor Team" value={away} onChange={setAway} teams={teams} />
         <TeamInput label="Home Team" value={home} onChange={setHome} teams={teams} />
       </section>
       <fieldset className="game-our-team"><legend>Which team is us?</legend><p>Wins and losses are counted for the team you choose.</p><div>
-        <label className={ourSide === 'away' ? 'selected' : ''}><input type="radio" name="ourSide" value="away" required checked={ourSide === 'away'} onChange={() => setOurSide('away')} /><span><strong>Away</strong><small>{away.trim() || 'Away Team'}</small></span></label>
         <label className={ourSide === 'home' ? 'selected' : ''}><input type="radio" name="ourSide" value="home" required checked={ourSide === 'home'} onChange={() => setOurSide('home')} /><span><strong>Home</strong><small>{home.trim() || 'Home Team'}</small></span></label>
+        <label className={ourSide === 'away' ? 'selected' : ''}><input type="radio" name="ourSide" value="away" required checked={ourSide === 'away'} onChange={() => setOurSide('away')} /><span><strong>Visitor</strong><small>{away.trim() || 'Visitor Team'}</small></span></label>
       </div></fieldset>
       {error && <p className="create-game-error" role="alert">{error}</p>}
       <div className="create-game-actions"><button type="submit" className="game-new"><Icon name="plus" size={22} />Start Game</button><button type="button" className="create-game-cancel button-secondary" onClick={onClose}>Cancel</button></div>

@@ -82,16 +82,16 @@ export function GamePage({ userId, gameId, onOpen, onBack }) {
   return <main className="game-panel game-tracker" aria-label="Game scorekeeper">
     <div className="game-tracker-heading"><button className="game-back" type="button" onClick={onBack}><Icon name="chevronLeft" size={14} />Back to Games</button><span className={game.ended ? 'game-status game-status-final' : 'game-status'} role="status">{editing ? 'Editing Final Score' : game.ended ? 'Final Score' : 'In Progress'}</span></div>
     <div className="game-scoreboard">
-      {(game.awayName ? ['away', 'home'] : ['home', 'away']).map(side => <section className={`game-team game-${side}`} key={side} aria-label={`${side === 'home' ? 'Home' : 'Away'} team`}>
-        <p className="game-side-label" title={side === 'home' ? game.homeName || 'Home' : game.awayName || 'Away'}>{side === 'home' ? game.homeName || 'Home' : game.awayName || 'Away'}</p><p className="game-side-caption">{side === 'home' ? 'Home' : 'Away'}</p>
-        <output className="game-score" aria-label={`${side === 'home' ? 'Home' : 'Away'} score`} aria-live="polite">{score[side]}</output>
+      {(game.ourSide === 'away' ? ['away', 'home'] : ['home', 'away']).map(side => <section className={`game-team game-${side}`} key={side} aria-label={`${side === 'home' ? 'Home' : 'Visitor'} team`}>
+        <p className="game-side-label" title={side === 'home' ? game.homeName || 'Home' : game.awayName || 'Visitor'}>{side === 'home' ? game.homeName || 'Home' : game.awayName || 'Visitor'}</p><p className="game-side-caption">{side === 'home' ? 'Home' : 'Visitor'}</p>
+        <output className="game-score" aria-label={`${side === 'home' ? 'Home' : 'Visitor'} score`} aria-live="polite">{score[side]}</output>
         <div className="game-score-controls">
           <button type="button" aria-label={`Decrease ${side} score`} disabled={(game.ended && !editing) || score[side] === 0} onClick={() => adjust(side, -1)}>-</button>
           <button type="button" aria-label={`Increase ${side} score`} disabled={(game.ended && !editing) || score[side] === 999} onClick={() => adjust(side, 1)}>+</button>
         </div>
       </section>)}
     </div>
-    {game.ended && !editing && <p className="game-result">{game.home === game.away ? 'The game ended in a tie.' : `${game.home > game.away ? game.homeName || 'Home' : game.awayName || 'Away'} Won!`}</p>}
+    {game.ended && !editing && <p className="game-result">{game.home === game.away ? 'The game ended in a tie.' : `${game.home > game.away ? game.homeName || 'Home' : game.awayName || 'Visitor'} Won!`}</p>}
     {saveError && <p role="alert" className="game-save-error">Your browser could not save this score. Keep this page open to retain it.</p>}
     <div className="game-actions">
       {game.ended ? <>
