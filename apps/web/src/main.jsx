@@ -4,6 +4,7 @@ import { AuthProvider, SignIn, SignUp, ForgotPassword, ProfileMenu, useAuth } fr
 import { TeamEdit } from './TeamEdit'
 import { TeamView } from './TeamView'
 import { TeamsPage } from './TeamsPage'
+import { GamePage } from './GamePage'
 import { Icon } from './ui'
 import { AppLoadingProvider, StartupReady, useAppLoading } from './LoadingScreen'
 import './style.css'
@@ -13,8 +14,9 @@ import './music-drawer.css'
 import './teams-page.css'
 import './swipe-delete.css'
 import './responsive.css'
+import './game.css'
 
-function Header({ account }) {
+function Header({ account, game = false }) {
   return <header className="hero">
     <img className="hero-background" src={`${import.meta.env.BASE_URL}hero-background.png`} alt="" fetchPriority="high" />
     <div className="top">
@@ -22,9 +24,9 @@ function Header({ account }) {
       {account && <div className="hero-account">{account}</div>}
     </div>
     <div className="intro">
-      <div className="eyebrow">YOUR LINEUP STARTS HERE</div>
-      <h1>Create your<br /><em>team.</em></h1>
-      <p>Build your roster. Give every player<br />their own walk-up music.</p>
+      <div className="eyebrow">{game ? 'GAME TRACKER' : 'YOUR LINEUP STARTS HERE'}</div>
+      <h1>{game ? 'Track the' : 'Create your'}<br /><em>{game ? 'Game Score' : 'team.'}</em></h1>
+      <p>{game ? <>Quick and simple scorekeeping<br />for your team.</> : <>Build your roster. Give every player<br />their own walk-up music.</>}</p>
     </div>
   </header>
 }
@@ -33,6 +35,7 @@ function App() {
   const { navigate } = useAppLoading()
   const getRoute = () => {
     const parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+    if (parts[0] === 'game') return { page: 'game', gameId: parts[1] || null, teamId: null, key: parts[1] ? 'game/' + parts[1] : 'game' }
     if (parts[0] === 'team' && parts[1] === 'new') return { page: 'edit', teamId: null, key: 'team/new' }
     if (parts[0] === 'team' && parts[1]) return { page: parts[2] === 'edit' ? 'edit' : 'view', teamId: parts[1], key: `team/${parts[1]}${parts[2] === 'edit' ? '/edit' : ''}` }
     return { page: 'teams', teamId: null, key: 'teams' }
@@ -68,13 +71,15 @@ function App() {
     navigate(href)
   }
   if (!user) return null
-  const content = route.page === 'teams'
+  const content = route.page === 'game'
+    ? <GamePage key={user.id} userId={user.id} gameId={route.gameId} onOpen={id => go('#/game/' + id)} onBack={() => go('#/game')} />
+    : route.page === 'teams'
     ? <TeamsPage key={`teams-${user.id}`} onSelect={id => go(`#/team/${id}`)} onAdd={() => go('#/team/new')} />
     : route.page === 'edit'
       ? <TeamEdit key={`edit-${route.teamId || 'new'}`} userId={user.id} teamId={route.teamId} onDirtyChange={onDirtyChange} onSavingChange={onSavingChange} onSaved={saved => go(`#/team/${saved.id}`)} onCancel={() => go(route.teamId ? `#/team/${route.teamId}` : '#/teams')} />
       : <TeamView key={`view-${route.teamId}`} userId={user.id} teamId={route.teamId} onEdit={() => go(`#/team/${route.teamId}/edit`)} />
   return <div className={`app ${route.page === 'view' || route.page === 'teams' ? 'team-view-app' : ''}`}>
-    <Header account={<ProfileMenu accountClassName="sports-account" />} />
+    <Header game={route.page === 'game'} account={<ProfileMenu accountClassName="sports-account" />} />
     {content}
     <footer className="site-footer">&copy; {new Date().getFullYear()} King Family Ranch, LLC</footer>
     <nav className="bottom-nav" aria-label="Main menu" onClick={event => {
@@ -84,7 +89,7 @@ function App() {
       if (!href.startsWith('#/')) return
       event.preventDefault()
       go(href)
-    }}><a className="nav-item active" href="#/teams" aria-current="page"><Icon /><span>Teams</span></a></nav>
+    }}><a className={`nav-item ${route.page !== 'game' ? 'active' : ''}`} href="#/teams" aria-current={route.page !== 'game' ? 'page' : undefined}><Icon /><span>Teams</span></a><a className={`nav-item ${route.page === 'game' ? 'active' : ''}`} href="#/game" aria-current={route.page === 'game' ? 'page' : undefined}><Icon name="game" /><span>Game</span></a></nav>
   </div>
 }
 function Welcome() {
