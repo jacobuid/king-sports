@@ -86,3 +86,5 @@ Embedded KingAuth forms provide sign-in, signup, and password recovery. The prof
 Existing records still belong to their original Clerk user IDs. KingAuth UUIDs do not automatically inherit them. Before production cutover, prepare an explicit, verified old-ID to new-ID mapping for all account-owned records; do not reassign records from browser input or assume email addresses establish ownership. No existing data is rewritten by this change. Deploy the API and frontend together because Clerk sessions will no longer authenticate.
 
 Migration `0012_kingauth_owner.sql` transfers the verified existing owner to their KingAuth UUID, preserving all record and storage IDs. Other accounts require their own verified mappings.
+
+KingAuth identifies this app as `KingSports` with its Vite base path. Credentials are stored per app path, separating GitHub Pages projects. Upgrading from the older shared storage requires a fresh sign-in; account UUIDs and owned data remain unchanged. New sessions display their app path, device/browser labels, and browser or PWA mode. These labels are display metadata; backend authorization still verifies the session and origin.

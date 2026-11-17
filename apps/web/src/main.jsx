@@ -146,4 +146,4 @@ function AuthenticatedApp() {
   if (isLoading) return null
   return <><StartupReady />{isSignedIn ? <App /> : <Welcome />}</>
 }
-createRoot(document.getElementById('root')).render(<><AppLoadingProvider needsAuthentication><AuthProvider><AuthenticatedApp /></AuthProvider></AppLoadingProvider><OrientationLock /></>)
+createRoot(document.getElementById('root')).render(<><AppLoadingProvider needsAuthentication><AuthProvider appName="KingSports" appPath={import.meta.env.BASE_URL}><AuthenticatedApp /></AuthProvider></AppLoadingProvider><OrientationLock /></>)
