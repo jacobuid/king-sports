@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { createKingAuthVerifier } from '@jacobuid/king-auth/server'
+import { createKingAuthVerifier } from '@jacobuid/king-auth/verifier'
 
 const origin = 'https://sports.example'
 const request = token => new Request('https://api.example/api/teams', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
@@ -15,7 +15,7 @@ test('KingAuth verifies bearer credentials for the configured frontend origin', 
     assert.equal(url, 'https://kingauth.app/api/browser/get-session')
     assert.equal(options.headers.Origin, origin)
     assert.equal(options.headers.Authorization, 'Bearer test-credential')
-    assert.equal(options.redirect, 'error')
+    assert.equal(options.redirect, 'manual')
     return Response.json({ user: { id: 'king-auth-user' } })
   } })
   assert.equal((await auth.getSession(request('test-credential'))).user.id, 'king-auth-user')
@@ -28,13 +28,13 @@ test('revoked KingAuth sessions are rejected and service outages fail closed', a
   await assert.rejects(unavailable.getSession(request('test')), /unavailable/)
 })
 
-test('Worker verifier uses manual redirects and rejects redirected credentials', async () => {
-  const { createWorkerAuth } = await import('../services/api/src/auth.ts')
-  const auth = createWorkerAuth(origin, async (_url, options) => {
-    assert.equal(options.redirect, 'manual')
-    return Response.json({ user: { id: 'verified' } })
-  })
-  assert.equal((await auth.getSession(request('test'))).user.id, 'verified')
-  const redirected = createWorkerAuth(origin, async () => new Response(null, { status: 302, headers: { Location: 'https://elsewhere.example' } }))
-  await assert.rejects(redirected.getSession(request('test')), /redirected/)
+test('Standalone verifier rejects redirects for sessions and reauthentication', async () => {
+  for (const status of [301, 302, 303, 307, 308]) {
+    const auth = createKingAuthVerifier({ origin, fetch: async (_url, options) => {
+      assert.equal(options.redirect, 'manual')
+      return new Response(null, { status, headers: { Location: 'https://elsewhere.example' } })
+    } })
+    await assert.rejects(auth.getSession(request('test')), /unavailable/)
+    await assert.rejects(auth.verifyReauthentication(request('test'), { proof: 'proof', action: 'test' }), /unavailable/)
+  }
 })

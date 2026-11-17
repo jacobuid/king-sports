@@ -13,8 +13,5 @@
   "vars": {
     "WEB_ORIGIN": "https://example.github.io",
     "B2_BUCKET": "replace-with-generated-bucket"
-  },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  }
 }
