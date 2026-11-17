@@ -1,0 +1,36 @@
+/* Fluid shell; compact controls on phones, wider content on tablets and desktops. */
+body { padding: 0; }
+.app { width: 100%; max-width: 1200px; min-height: 100dvh; }
+.app.welcome { min-height: 100dvh; }
+.bottom-nav { width: min(100%, 1200px); }
+.bottom-nav .nav-item { flex: 0 0 auto; min-width: 100px; }
+.welcome-panel, .welcome-intro, .auth-card { min-width: 0; }
+@media (min-width: 600px) {
+  .teams-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .sheet.music-drawer { width: min(640px, calc(100vw - 48px)); }
+}
+@media (min-width: 768px) {
+  .app:not(.welcome) { display: flex; flex-direction: column; padding-bottom: 0; }
+  .app > .bottom-nav { order: -1; position: sticky; top: 0; bottom: auto; left: auto; transform: none; width: 100%; min-height: 64px; padding: 0 32px; border-top: 0; border-bottom: 1px solid #ffffff18; z-index: 20; }
+  .bottom-nav .nav-item { flex-direction: row; justify-content: flex-start; gap: 10px; min-width: 120px; }
+  .hero { padding: 28px 40px 64px; }
+  .hero .intro h1 { font-size: 48px; }
+  .team-view, .teams-page { padding: 32px 40px; }
+  .view-roster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .view-player { min-width: 0; }
+  .form-panel { padding: 32px 40px; }
+  .team-fields { width: 100%; max-width: 900px; margin-inline: auto; }
+  .form-panel + .bottom { padding-inline: 40px; }
+  .app.welcome { padding: 32px 40px 48px; }
+  .welcome-brand img { width: 190px; }
+  .welcome-panel { max-width: 1080px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 440px); gap: 48px; align-items: center; margin-top: 40px; }
+  .welcome-intro { margin-bottom: 0; }
+  .welcome-panel .welcome-intro h1 { font-size: clamp(44px, 5vw, 64px); }
+  .welcome-panel .welcome-copy { max-width: 460px; font-size: 18px; }
+  .auth-card { padding: 32px; }
+  .sheet.music-drawer { top: 24px; max-height: calc(100dvh - 48px); height: min(760px, calc(100dvh - 48px)); border-radius: 24px; }
+}
+@media (min-width: 1100px) {
+  .view-roster { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .teams-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

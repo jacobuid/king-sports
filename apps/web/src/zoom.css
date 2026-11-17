@@ -1,8 +1,8 @@
-/* Keep the installed PWA at its designed mobile scale while preserving scrolling. */
+/* Use native browser scrolling and zoom across screen sizes. */
 html,
 body {
   background-color: var(--theme-blue-dark, #041c36);
-  touch-action: pan-y;
+  touch-action: auto;
   overscroll-behavior-x: none;
   overscroll-behavior-y: none;
 }

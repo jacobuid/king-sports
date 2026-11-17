@@ -9,10 +9,10 @@ import { AppLoadingProvider, StartupReady, useAppLoading } from './LoadingScreen
 import './style.css'
 import './theme.css'
 import './zoom.css'
-import './orientation.css'
 import './music-drawer.css'
 import './teams-page.css'
 import './swipe-delete.css'
+import './responsive.css'
 
 function Header({ account }) {
   return <header className="hero">
@@ -125,25 +125,9 @@ function Welcome() {
     </main>
   </div>
 }
-function OrientationLock() {
-  useEffect(() => {
-    const lockPortrait = () => {
-      const request = window.screen.orientation?.lock?.('portrait-primary')
-      request?.catch(() => {})
-    }
-    lockPortrait()
-    window.addEventListener('orientationchange', lockPortrait)
-    return () => window.removeEventListener('orientationchange', lockPortrait)
-  }, [])
-  return <div className="orientation-lock" role="status" aria-live="polite">
-    <img src={`${import.meta.env.BASE_URL}logo.png`} alt="KingSports" />
-    <strong>Rotate your device</strong>
-    <span>KingSports is designed for portrait mode.</span>
-  </div>
-}
 function AuthenticatedApp() {
   const { isLoading, isSignedIn } = useAuth()
   if (isLoading) return null
   return <><StartupReady />{isSignedIn ? <App /> : <Welcome />}</>
 }
-createRoot(document.getElementById('root')).render(<><AppLoadingProvider needsAuthentication><AuthProvider appName="KingSports" appPath={import.meta.env.BASE_URL}><AuthenticatedApp /></AuthProvider></AppLoadingProvider><OrientationLock /></>)
+createRoot(document.getElementById('root')).render(<><AppLoadingProvider needsAuthentication><AuthProvider appName="KingSports" appPath={import.meta.env.BASE_URL}><AuthenticatedApp /></AuthProvider></AppLoadingProvider></>)
