@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Icon, Modal } from './ui'
 import { GameListRow } from './GameListRow'
 import { CreateGameDrawer } from './CreateGameDrawer'
+import { GameWorkspace } from './GameWorkspace'
 
 const validScore = game => game && ['home', 'away'].every(side => Number.isSafeInteger(game[side]) && game[side] >= 0 && game[side] <= 999) && typeof game.ended === 'boolean'
 function readGames(key, legacyKey) {
@@ -81,6 +82,7 @@ export function GamePage({ userId, gameId, onOpen, onBack }) {
   if (!game) return <main className="game-panel"><h2>Game not found</h2><p>This game is not saved in this browser.</p><button className="game-back" type="button" onClick={onBack}>Back to Games</button></main>
   return <main className="game-panel game-tracker" aria-label="Game scorekeeper">
     <div className="game-tracker-heading"><button className="game-back" type="button" onClick={onBack}><Icon name="chevronLeft" size={14} />Back to Games</button><span className={game.ended ? 'game-status game-status-final' : 'game-status'} role="status">{editing ? 'Editing Final Score' : game.ended ? 'Final Score' : 'In Progress'}</span></div>
+    <GameWorkspace key={game.id} game={game} score={score} userId={userId} onRosterChange={musicTeamId => updateGame(current => ({ ...current, musicTeamId }))}>
     <div className="game-scoreboard">
       {(game.ourSide === 'away' ? ['away', 'home'] : ['home', 'away']).map(side => <section className={`game-team game-${side}`} key={side} aria-label={`${side === 'home' ? 'Home' : 'Visitor'} team`}>
         <p className="game-side-label" title={side === 'home' ? game.homeName || 'Home' : game.awayName || 'Visitor'}>{side === 'home' ? game.homeName || 'Home' : game.awayName || 'Visitor'}</p><p className="game-side-caption">{side === 'home' ? 'Home' : 'Visitor'}</p>
@@ -107,6 +109,7 @@ export function GamePage({ userId, gameId, onOpen, onBack }) {
         <button type="button" className="game-end" onClick={() => setConfirmation('end')}><Icon name="finish" size={22} />End Game</button>
       </>}
     </div>
+    </GameWorkspace>
     {confirmation && <Modal className="game-confirm" title={confirmation === 'edit' ? 'Edit ended game?' : confirmation === 'restart' ? 'Restart game?' : 'End game?'} iconName="game" onClose={() => setConfirmation(null)}>
       <p>{confirmation === 'edit' ? 'Are you sure you want to change this game that has ended?' : confirmation === 'restart' ? 'Both scores will return to zero and a new game will begin.' : `Finish this game with a score of ${game.home} to ${game.away}?`}</p>
       <button type="button" className="game-confirm-action" onClick={confirm}>{confirmation === 'edit' ? 'Edit Game' : confirmation === 'restart' ? 'Restart Game' : 'End Game'}</button>

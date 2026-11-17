@@ -126,3 +126,17 @@
 
 .game-list-icon .sport-ball-image { width: calc(100% - 8px); height: calc(100% - 8px); }
 .game-sports .sport-ball-image { width: 48px; height: 48px; }
+.game-workspace-tabs { position: sticky; top: 0; z-index: 4; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 24px; padding: 5px; border: 1px solid #28557a; border-radius: 14px; background: #071c2d; }
+.game-workspace-tabs button { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 10px 6px; border: 0; border-radius: 10px; background: transparent; color: #b5cce1; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.game-workspace-tabs button[aria-selected=true] { background: var(--theme-yellow); color: #041c36; }
+.game-workspace-panel[hidden] { display: none; }
+.game-workspace-panel > .team-view { margin: 0; padding: 0; border: 0; border-radius: 0; min-height: 0; background: transparent; color: white; }
+.game-mini-score { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 14px; margin-bottom: 20px; border: 1px solid #28557a; border-radius: 12px; background: #071c2d; }
+.game-mini-score > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #c7dbee; font-size: 13px; }
+.game-mini-score strong { margin-left: 8px; color: #fff; font-size: 20px; }
+.game-roster-picker { margin: 0 0 24px; }
+.game-roster-picker > label { display: block; margin-bottom: 8px; color: #c7dbee; font-size: 13px; font-weight: 700; }
+.game-roster-picker select { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid #b3c7de; border-radius: 10px; background: #fff; color: #132641; font: inherit; }
+.game-roster-picker p { color: #a9c8e4; font-size: 13px; line-height: 1.5; }
+.game-roster-picker button { padding: 6px 10px; border: 1px solid #b3c7de; border-radius: 6px; background: #eaf3ff; color: #123c67; font: inherit; cursor: pointer; }
+@media (min-width: 768px) { .game-workspace-tabs { top: 64px; max-width: 760px; margin-inline: auto; } .game-mini-score, .game-roster-picker { max-width: 760px; margin-inline: auto; } }

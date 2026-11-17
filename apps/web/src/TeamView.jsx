@@ -21,7 +21,7 @@ function shuffleSongIds(ids) {
   return shuffled
 }
 
-export function TeamView({ userId, teamId, onEdit }) {
+export function TeamView({ userId, teamId, onEdit, embedded = false }) {
   const { getToken } = useAuth()
   const requestTeam = useMemo(() => createTeamApi(getToken), [getToken])
   const requestMusic = useMemo(() => createMusicApi(getToken), [getToken])
@@ -43,7 +43,7 @@ export function TeamView({ userId, teamId, onEdit }) {
   const teamOrder = useRef(null)
   const previousOrder = useRef(null)
   const playerReorder = usePressDragReorder({
-    disabled: loading || savingOrder,
+    disabled: embedded || loading || savingOrder,
     onStart() { previousOrder.current = teamOrder.current },
     onMove(fromId, toId) {
       setTeam(current => {
@@ -214,12 +214,13 @@ export function TeamView({ userId, teamId, onEdit }) {
   const playable = team?.teamSongs?.some(song => song.status === 'ready')
   const teamSongs = (team?.teamSongs || []).filter(song => song.status === 'ready')
   const playlistIsActive = playlistMode && activeId?.startsWith('team-')
-  return <main className="team-view" style={createTeamTheme(team?.primaryColor)}>
+  const Container = embedded ? 'section' : 'main'
+  return <Container className="team-view" style={createTeamTheme(team?.primaryColor)}>
     <audio ref={introAudio} hidden onPlaying={() => { setPlaying(true); setError('') }} onPause={() => { if (audio.current?.paused) setPlaying(false) }} />
     <audio ref={audio} crossOrigin="anonymous" hidden onPlaying={() => { setPlaying(true); setError('') }} onPause={() => { if (introAudio.current?.paused) setPlaying(false) }} onEnded={nextSong} onError={() => { queue.current = []; setPlaylistMode(false); setError('This song could not be played. Tap play to retry.'); setActiveId(null) }} />
     {loading ? <div className="view-empty" role="status"><Icon name="ball" size={42} /><h2>Loading your lineup...</h2></div> : <>
       {error && <div className="view-error" role="alert"><p>{error}</p>{!team && <button className="view-retry" onClick={() => setRetry(value => value + 1)}>Try again</button>}</div>}
-      {!team ? !error && <div className="view-empty"><Icon name="team" size={46} /><h2>Your team starts here.</h2><p>Create your team and build your first lineup.</p><button className="view-edit" onClick={onEdit}>Create Team <Icon name="plus" size={18} /></button></div> : <>
+      {!team ? !error && <div className="view-empty"><Icon name="team" size={46} /><h2>Your team starts here.</h2><p>Create your team and build your first lineup.</p>{!embedded && <button className="view-edit" onClick={onEdit}>Create Team <Icon name="plus" size={18} /></button>}</div> : <>
         <section className="team-summary" aria-label="Team details">
           <img className="summary-background" src={`${import.meta.env.BASE_URL}hero-background.png`} alt="" />
           <div className="view-team-logo">{team.logoUrl || team.logoDataUrl ? <img src={team.logoUrl || team.logoDataUrl} alt={`${team.name} logo`} /> : <Icon name="team" size={48} />}</div>
@@ -248,8 +249,8 @@ export function TeamView({ userId, teamId, onEdit }) {
             return <article className={`view-playlist-song${songActive ? ' active' : ''}`} key={song.id}><span className="playlist-track-number">{index + 1}</span><span><strong>{song.title}</strong><small>{song.artist || 'Team song'}{song.duration ? ` · ${Math.floor(song.duration / 60)}:${String(Math.floor(song.duration % 60)).padStart(2, '0')}` : ''}</small></span><button className="view-play" aria-label={`${songPlaying ? 'Pause' : 'Play'} ${song.title}`} aria-pressed={songPlaying} onClick={() => playTeamSong(song.id)}><Icon name={songPlaying ? 'pause' : 'play'} size={15} /></button></article>
           })}</div>}
         </section>
-        <button className="view-edit" onClick={onEdit}>Edit Team <Icon name="arrowRight" size={20} /></button>
+        {!embedded && <button className="view-edit" onClick={onEdit}>Edit Team <Icon name="arrowRight" size={20} /></button>}
       </>}
     </>}
-  </main>
+  </Container>
 }
