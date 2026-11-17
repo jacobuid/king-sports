@@ -45,15 +45,20 @@ export function GamePage({ userId, gameId, onOpen, onBack }) {
     }
     setConfirmation(null)
   }
-  if (!gameId) return <main className="game-panel" aria-label="Games">
-    <div className="game-list-heading"><div><span>YOUR SCOREBOOK</span><h2>Games</h2><p>Start a game or pick up where you left off.</p></div><button className="game-new" type="button" onClick={startGame}><Icon name="plus" size={17} />New Game</button></div>
+  if (!gameId) return <main className="game-panel game-home" aria-label="Games">
+    <button className="game-new" type="button" onClick={startGame}><Icon name="plus" size={26} />Create Game</button>
+    <h2 className="game-recent-heading"><Icon name="history" size={25} />Recent Games</h2>
     {saveError && <p role="alert" className="game-save-error">Your browser could not save your games. Keep this page open to retain them.</p>}
-    {games.length ? <div className="game-list">{games.map(item => <button type="button" className="game-list-card" key={item.id} aria-label={'Open ' + item.name} onClick={() => onOpen(item.id)}>
-      <span className="game-list-title"><Icon name="game" size={22} /><strong>{item.name}</strong><span className={item.ended ? 'game-badge final' : 'game-badge'}>{item.ended ? 'Final' : 'In progress'}</span></span>
-      <span className="game-list-score"><span>Home <strong>{item.home}</strong></span><span>Away <strong>{item.away}</strong></span></span>
-      <span className="game-list-date">{new Date(item.createdAt).toLocaleString()}</span>
-      <span className="game-list-open">{item.ended ? 'View final score' : 'Continue game'} <Icon name="chevronRight" size={13} /></span>
-    </button>)}</div> : <div className="game-list-empty"><Icon name="game" size={46} /><h3>No games yet</h3><p>Start your first game to keep score.</p></div>}
+    {games.length ? <div className="game-list">{games.map(item => {
+      const result = !item.ended ? 'active' : item.home > item.away ? 'win' : item.home < item.away ? 'loss' : 'tie'
+      const label = { active: 'In progress', win: 'Home win', loss: 'Home loss', tie: 'Tie' }[result]
+      return <button type="button" className={'game-list-card result-' + result} key={item.id} aria-label={'Open ' + item.name + ', ' + label + ', Home ' + item.home + ', Away ' + item.away} onClick={() => onOpen(item.id)}>
+        <span className="game-list-icon" aria-hidden="true"><Icon name="ball" size={28} /></span>
+        <span className="game-list-info"><strong>{item.name}</strong><time className="game-list-date" dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</time><span className="game-list-result">{label}</span></span>
+        <span className="game-list-totals"><strong>{item.home} - {item.away}</strong><span className={'game-badge ' + (item.ended ? 'final' : '')}>{item.ended ? 'Final' : 'Live'}</span></span>
+        <Icon name="chevronRight" size={18} />
+      </button>
+    })}</div> : <div className="game-list-empty"><Icon name="game" size={46} /><h3>No games yet</h3><p>Create your first game to keep score.</p></div>}
   </main>
   if (!game) return <main className="game-panel"><h2>Game not found</h2><p>This game is not saved in this browser.</p><button className="game-back" type="button" onClick={onBack}>Back to Games</button></main>
   return <main className="game-panel" aria-label="Game scorekeeper">

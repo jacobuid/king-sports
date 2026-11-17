@@ -16,7 +16,7 @@ import './swipe-delete.css'
 import './responsive.css'
 import './game.css'
 
-function Header({ account, game = false }) {
+function Header({ account, game = false, gameList = false }) {
   return <header className="hero">
     <img className="hero-background" src={`${import.meta.env.BASE_URL}hero-background.png`} alt="" fetchPriority="high" />
     <div className="top">
@@ -25,8 +25,8 @@ function Header({ account, game = false }) {
     </div>
     <div className="intro">
       <div className="eyebrow">{game ? 'GAME TRACKER' : 'YOUR LINEUP STARTS HERE'}</div>
-      <h1>{game ? 'Track the' : 'Create your'}<br /><em>{game ? 'Game Score' : 'team.'}</em></h1>
-      <p>{game ? <>Quick and simple scorekeeping<br />for your team.</> : <>Build your roster. Give every player<br />their own walk-up music.</>}</p>
+      {gameList ? <h1>Game</h1> : <h1>{game ? 'Track the' : 'Create your'}<br /><em>{game ? 'Game Score' : 'team.'}</em></h1>}
+      <p>{gameList ? <>Create a new game or view past games<br />and final scores.</> : game ? <>Quick and simple scorekeeping<br />for your team.</> : <>Build your roster. Give every player<br />their own walk-up music.</>}</p>
     </div>
   </header>
 }
@@ -79,7 +79,7 @@ function App() {
       ? <TeamEdit key={`edit-${route.teamId || 'new'}`} userId={user.id} teamId={route.teamId} onDirtyChange={onDirtyChange} onSavingChange={onSavingChange} onSaved={saved => go(`#/team/${saved.id}`)} onCancel={() => go(route.teamId ? `#/team/${route.teamId}` : '#/teams')} />
       : <TeamView key={`view-${route.teamId}`} userId={user.id} teamId={route.teamId} onEdit={() => go(`#/team/${route.teamId}/edit`)} />
   return <div className={`app ${route.page === 'view' || route.page === 'teams' ? 'team-view-app' : ''}`}>
-    <Header game={route.page === 'game'} account={<ProfileMenu accountClassName="sports-account" />} />
+    <Header game={route.page === 'game'} gameList={route.page === 'game' && !route.gameId} account={<ProfileMenu accountClassName="sports-account" />} />
     {content}
     <footer className="site-footer">&copy; {new Date().getFullYear()} King Family Ranch, LLC</footer>
     <nav className="bottom-nav" aria-label="Main menu" onClick={event => {
