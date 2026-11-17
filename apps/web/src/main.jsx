@@ -102,13 +102,18 @@ function Welcome() {
     <img className="welcome-background" src={`${import.meta.env.BASE_URL}hero-background.png`} alt="" fetchPriority="high" />
     <header className="welcome-brand"><img src={`${import.meta.env.BASE_URL}logo.png`} alt="KingSports" width="160" height="146" /></header>
     <main className="welcome-panel">
+      <div className="welcome-intro">
+        <p className="welcome-eyebrow">YOUR LINEUP STARTS HERE</p>
+        <h1>Your team<br />starts here.</h1>
+        <p className="welcome-copy">Sign in to create your roster and give every player their own walk-up music.</p>
+      </div>
       <section className="auth-card" aria-labelledby="auth-heading">
         <div className="auth-tabs" role="tablist" aria-label="Account access" onKeyDown={changeTab}>
           <button id="auth-tab-signin" type="button" role="tab" aria-selected={activeTab === 'signin'} aria-controls="auth-panel" tabIndex={activeTab === 'signin' ? 0 : -1} onClick={() => setForm('signin')}>Sign in</button>
           <button id="auth-tab-signup" type="button" role="tab" aria-selected={activeTab === 'signup'} aria-controls="auth-panel" tabIndex={activeTab === 'signup' ? 0 : -1} onClick={() => setForm('signup')}>Create account</button>
         </div>
         <div id="auth-panel" role="tabpanel" aria-labelledby={'auth-tab-' + activeTab}>
-          <h1 id="auth-heading">{heading}</h1>
+          <h2 id="auth-heading">{heading}</h2>
           <p className="auth-description">{form === 'signup' ? 'Create your KingSports account and get your team ready.' : form === 'reset' ? 'We’ll help you get back to your team.' : 'Sign in to KingSports. Your team is waiting.'}</p>
           <div key={form} className="auth-form-content">
             {form === 'signin' ? <SignIn /> : form === 'signup' ? <SignUp /> : <ForgotPassword />}

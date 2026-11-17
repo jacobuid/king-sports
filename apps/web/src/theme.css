@@ -123,13 +123,15 @@
 .sports-account > section > ul > li > span { font-weight: 700; }
 .sports-account > section > ul > li > button { display: block; margin-top: 10px; }
 /* Light account forms over the stadium artwork. */
-.app.welcome { gap: 28px; padding-inline: 20px; }
-.welcome-panel { width: 100%; margin-inline: auto; }
+.app.welcome { justify-content: flex-start; gap: 0; padding-inline: 20px; }
+.welcome-panel { width: 100%; margin: 64px auto 0; }
+.welcome-intro { margin-bottom: 28px; }
+.welcome-intro .welcome-copy { margin-bottom: 0; }
 .auth-card { padding: 24px; border: 1px solid #dbe4ed; border-radius: 24px; background: #fff; color: var(--theme-blue-dark); box-shadow: 0 20px 60px #0003; text-align: left; }
 .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 5px; border-radius: 12px; background: #f0f4f8; }
 .auth-tabs button { min-height: 46px; padding: 10px 8px; border: 0; border-radius: 8px; background: transparent; color: #58708a; font: inherit; font-size: 14px; cursor: pointer; }
 .auth-tabs button[aria-selected=true] { background: #fff; color: var(--theme-blue-dark); font-weight: 700; box-shadow: 0 2px 6px #041c3609; }
-.welcome-panel .auth-card h1 { margin: 30px 0 10px; color: var(--theme-blue-dark); font-size: clamp(26px, 7vw, 32px); line-height: 1.2; letter-spacing: -1px; text-shadow: none; }
+.welcome-panel .auth-card h2 { margin: 30px 0 10px; color: var(--theme-blue-dark); font-size: clamp(26px, 7vw, 32px); line-height: 1.2; letter-spacing: -1px; text-shadow: none; }
 .auth-description { margin: 0 0 28px; color: #62758b; font-size: 15px; line-height: 1.6; }
 .auth-form-content .king-auth-form > h2 { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .auth-card .king-auth-fields { gap: 20px; }
