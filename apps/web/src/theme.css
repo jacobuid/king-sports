@@ -124,7 +124,13 @@
 .sports-account > section { margin-top: 28px; }
 .sports-account > section > ul { display: grid; gap: 12px; padding: 0; list-style: none; }
 .sports-account > section > ul > li { min-width: 0; padding: 14px; border: 1px solid #28557a; border-radius: 12px; background: #f3f7fb; line-height: 1.6; overflow-wrap: anywhere; }
-.sports-account > section > ul > li > span { font-weight: 700; }
+.king-auth-session-heading { color: var(--theme-blue-dark); font-size: 14px; line-height: 1.6; }
+.king-auth-session-heading strong { font-weight: 750; }
+.king-auth-session-icon { display: inline-block; margin-right: 6px; vertical-align: middle; color: #1d67bc; }
+.king-auth-session-current { display: inline-block; padding: 1px 6px; border-radius: 6px; background: #e0edfa; color: #123c67; font-size: 11px; font-weight: 700; }
+.king-auth-session > p { margin: 8px 0 0; color: #62758b; font-size: 12px; line-height: 1.6; }
+.king-auth-session-app { overflow-wrap: anywhere; }
+.king-auth-session > button { min-height: 44px; }
 .sports-account > section > ul > li > button { display: block; margin-top: 10px; }
 /* Light account forms over the stadium artwork. */
 .app.welcome { justify-content: flex-start; gap: 0; padding-inline: 20px; }
