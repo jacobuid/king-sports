@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { ClerkProvider, ClerkLoaded, SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react'
+import { AuthProvider, SignIn, SignUp, ForgotPassword, ProfileMenu, useAuth } from '@jacobuid/king-auth'
 import { TeamEdit } from './TeamEdit'
 import { TeamView } from './TeamView'
 import { TeamsPage } from './TeamsPage'
@@ -14,8 +14,6 @@ import './music-drawer.css'
 import './teams-page.css'
 import './swipe-delete.css'
 
-const key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-const appUrl = new URL(import.meta.env.BASE_URL, window.location.origin).href
 function Header({ account }) {
   return <header className="hero">
     <img className="hero-background" src={`${import.meta.env.BASE_URL}hero-background.png`} alt="" fetchPriority="high" />
@@ -31,7 +29,7 @@ function Header({ account }) {
   </header>
 }
 function App() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const { navigate } = useAppLoading()
   const getRoute = () => {
     const parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
@@ -76,7 +74,7 @@ function App() {
       ? <TeamEdit key={`edit-${route.teamId || 'new'}`} userId={user.id} teamId={route.teamId} onDirtyChange={onDirtyChange} onSavingChange={onSavingChange} onSaved={saved => go(`#/team/${saved.id}`)} onCancel={() => go(route.teamId ? `#/team/${route.teamId}` : '#/teams')} />
       : <TeamView key={`view-${route.teamId}`} userId={user.id} teamId={route.teamId} onEdit={() => go(`#/team/${route.teamId}/edit`)} />
   return <div className={`app ${route.page === 'view' || route.page === 'teams' ? 'team-view-app' : ''}`}>
-    <Header account={<UserButton />} />
+    <Header account={<ProfileMenu />} />
     {content}
     <footer className="site-footer">&copy; {new Date().getFullYear()} King Family Ranch, LLC</footer>
     <nav className="bottom-nav" aria-label="Main menu" onClick={event => {
@@ -90,6 +88,7 @@ function App() {
   </div>
 }
 function Welcome() {
+  const [form, setForm] = useState('signin')
   return <div className="app welcome">
     <img className="welcome-background" src={`${import.meta.env.BASE_URL}hero-background.png`} alt="" fetchPriority="high" />
     <header className="welcome-brand"><img src={`${import.meta.env.BASE_URL}logo.png`} alt="KingSports" width="160" height="146" /></header>
@@ -97,7 +96,12 @@ function Welcome() {
       <p className="welcome-eyebrow">YOUR LINEUP STARTS HERE</p>
       <h1>Your team<br />starts here.</h1>
       <p className="welcome-copy">Sign in to create your roster and give every player their own walk-up music.</p>
-      {key ? <SignInButton mode="modal"><button className="save welcome-sign-in">Sign in to KingSports <Icon name="arrowRight" size={15} /></button></SignInButton> : <p>Set VITE_CLERK_PUBLISHABLE_KEY to enable sign-in.</p>}
+      {form === 'signin' ? <SignIn /> : form === 'signup' ? <SignUp /> : <ForgotPassword />}
+      <nav className="auth-links" aria-label="Account access">
+        {form !== 'signin' && <button type="button" onClick={() => setForm('signin')}>Sign in</button>}
+        {form !== 'signup' && <button type="button" onClick={() => setForm('signup')}>Create account</button>}
+        {form !== 'reset' && <button type="button" onClick={() => setForm('reset')}>Forgot password?</button>}
+      </nav>
     </main>
   </div>
 }
@@ -117,4 +121,9 @@ function OrientationLock() {
     <span>KingSports is designed for portrait mode.</span>
   </div>
 }
-createRoot(document.getElementById('root')).render(<><AppLoadingProvider needsAuthentication={!!key}>{key ? <ClerkProvider publishableKey={key} signInForceRedirectUrl={appUrl} signUpForceRedirectUrl={appUrl} afterSignOutUrl={appUrl}><ClerkLoaded><StartupReady /></ClerkLoaded><SignedOut><Welcome /></SignedOut><SignedIn><App /></SignedIn></ClerkProvider> : <Welcome />}</AppLoadingProvider><OrientationLock /></>)
+function AuthenticatedApp() {
+  const { isLoading, isSignedIn } = useAuth()
+  if (isLoading) return null
+  return <><StartupReady />{isSignedIn ? <App /> : <Welcome />}</>
+}
+createRoot(document.getElementById('root')).render(<><AppLoadingProvider needsAuthentication><AuthProvider><AuthenticatedApp /></AuthProvider></AppLoadingProvider><OrientationLock /></>)

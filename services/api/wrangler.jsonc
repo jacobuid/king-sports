@@ -1,7 +1,7 @@
 {
   "name": "king-sports-api",
   "main": "src/index.ts",
-  "compatibility_date": "2025-01-01",
+  "compatibility_date": "2026-11-16",
   "d1_databases": [
     {
       "binding": "DB",
@@ -13,5 +13,8 @@
   "vars": {
     "WEB_ORIGIN": "https://example.github.io",
     "B2_BUCKET": "replace-with-generated-bucket"
-  }
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
 }

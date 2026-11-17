@@ -23,7 +23,7 @@ async function service(env: MusicEnv, path: string, body: unknown) {
   return response.json() as Promise<Record<string, unknown>>
 }
 export async function handleMusicCallback(request: Request, env: MusicEnv): Promise<Response> {
-  // A different server-only token from Clerk. Never exposed in browser responses.
+  // A different server-only token from user authentication. Never exposed in browser responses.
   if (!env.MUSIC_SERVICE_TOKEN || request.headers.get('Authorization') !== `Bearer ${env.MUSIC_SERVICE_TOKEN}`) return json({ error: 'Unauthorized' }, 401)
   const id = new URL(request.url).pathname.split('/').pop() || ''
   if (!uuid.test(id)) return json({ error: 'Invalid track' }, 400)
@@ -183,7 +183,7 @@ export async function handleMusicRequest(request: Request, env: MusicEnv, userId
   if (play && request.method === 'POST') {
     const track = await env.DB.prepare("SELECT * FROM music_tracks WHERE id=? AND owner_user_id=? AND status='ready'").bind(play[1], userId).first<Track>()
     if (!track) return json({ error: 'Song not found' }, 404)
-    // Token grants only this object for one hour. Audio requests need no Clerk header.
+    // Token grants only this object for one hour. Audio requests need no authentication header.
     const expires = Math.floor(Date.now() / 1000) + 3600
     const signature = await signPlayback(env, track.id, expires)
     return json({ url: `${url.origin}/content/music/${track.id}?expires=${expires}&signature=${signature}` })

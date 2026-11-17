@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@jacobuid/king-auth";
 import { Icon, Modal } from "./ui";
 import { MusicDrawer } from "./MusicDrawer";
 import { createMusicApi, mergeMusic } from "./musicApi";

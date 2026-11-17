@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { useAuth } from '@clerk/clerk-react'
+import { useAuth } from '@jacobuid/king-auth'
 import { Icon } from './ui'
 import { createTeamApi } from './teamApi'
 import { teamStorage } from './teamStorage'

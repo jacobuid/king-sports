@@ -7,10 +7,10 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@fortawesome/react-fontawesome": "^3.5.0",
+    "@jacobuid/king-auth": "github:jacobuid/king-auth#sdk",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

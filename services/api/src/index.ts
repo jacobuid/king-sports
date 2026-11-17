@@ -1,10 +1,10 @@
-import { createClerkClient } from '@clerk/backend'
+import { createKingAuthVerifier } from '@jacobuid/king-auth/server'
 import { AwsClient } from 'aws4fetch'
 import { handleTeamListRequest, handleTeamRequest } from './teams'
 import { createLogoStorage } from './logo-storage'
 import { handleMusicRequest, handleMusicCallback, handleMusicContent, musicUploadUrl, type MusicEnv } from './music'
 
-interface Env extends MusicEnv { CLERK_SECRET_KEY: string; CLERK_PUBLISHABLE_KEY: string; B2_KEY_ID: string; B2_APPLICATION_KEY: string; B2_LOGO_KEY_ID: string; B2_LOGO_APPLICATION_KEY: string; WEB_ORIGIN: string }
+interface Env extends MusicEnv { B2_KEY_ID: string; B2_APPLICATION_KEY: string; B2_LOGO_KEY_ID: string; B2_LOGO_APPLICATION_KEY: string; WEB_ORIGIN: string }
 type Media = { id: string; title: string; description: string; category: string; video_key: string; thumbnail_key: string | null; mime_type: string; created_at: string }
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })
@@ -17,9 +17,9 @@ async function b2Url(env: Env, key: string) {
   return (await signer(env).sign(url, { aws: { signQuery: true } })).url
 }
 async function authorize(request: Request, env: Env) {
-  const clerk = createClerkClient({ secretKey: env.CLERK_SECRET_KEY, publishableKey: env.CLERK_PUBLISHABLE_KEY })
-  const state = await clerk.authenticateRequest(request, { authorizedParties: [env.WEB_ORIGIN] })
-  return state.toAuth()?.userId || null
+  const auth = createKingAuthVerifier({ origin: env.WEB_ORIGIN, allowLocalhost: true })
+  const session = await auth.getSession(request)
+  return session?.user.id || null
 }
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useAuth } from '@clerk/clerk-react'
+import { useAuth } from '@jacobuid/king-auth'
 import { createTeamApi } from './teamApi'
 import { Icon, Modal } from './ui'
 import { usePressDragReorder } from './usePressDragReorder'
